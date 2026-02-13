@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="hi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Laptop Parts Bazaar - बेचें और खरीदें</title>
+  <style>
+    :root{--bg:#0f1724;--card:#0b1220;--accent:#0ea5a4;--muted:#94a3b8}
+    *{box-sizing:border-box}
+    body{font-family:Inter,system-ui,Segoe UI,Roboto,'Noto Sans',sans-serif;margin:0;background:linear-gradient(180deg,#071025 0%, #071a2a 100%);color:#e6eef6}
+    header{padding:20px;border-bottom:1px solid rgba(255,255,255,.04);display:flex;align-items:center;justify-content:space-between}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,var(--accent),#06b6d4);display:flex;align-items:center;justify-content:center;font-weight:700}
+    h1{font-size:18px;margin:0}
+    p.lead{margin:0;color:var(--muted);font-size:13px}
+    .top-controls{display:flex;gap:10px;align-items:center}
+    input,select,button,textarea{font-size:14px}
+    .search{padding:8px 12px;border-radius:8px;background:#071828;border:1px solid rgba(255,255,255,.03);color:#cfe9f2}
+    .container{max-width:1100px;margin:22px auto;padding:0 16px}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:20px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,.03)}
+    .products{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+    .prod{background:transparent;border-radius:10px;padding:10px;border:1px solid rgba(255,255,255,.03);display:flex;flex-direction:column;gap:8px}
+    .thumb{height:120px;border-radius:8px;background:#061222;display:flex;align-items:center;justify-content:center;overflow:hidden}
+    .thumb img{max-width:100%;max-height:100%;object-fit:contain}
+    .pmeta{display:flex;justify-content:space-between;align-items:center}
+    .price{font-weight:700;color:var(--accent)}
+    .badge{padding:4px 8px;border-radius:999px;font-size:12px;background:rgba(255,255,255,.03)}
+    form .row{display:flex;gap:8px;margin-bottom:8px}
+    label{font-size:13px;color:var(--muted);display:block;margin-bottom:6px}
+    input[type=file]{color:#9fb6bf}
+    button{background:var(--accent);border:none;color:#042027;padding:8px 12px;border-radius:8px;cursor:pointer}
+    .mutebtn{background:transparent;border:1px solid rgba(255,255,255,.03);color:var(--muted)}
+    .small{font-size:12px;color:var(--muted)}
+    .flex{display:flex;gap:8px;align-items:center}
+    .filters{display:flex;gap:8px;flex-wrap:wrap}
+    footer{padding:14px;text-align:center;color:var(--muted);font-size:13px}
+    @media(max-width:880px){.grid{grid-template-columns:1fr} .top-controls{flex-wrap:wrap}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">LP</div>
+      <div>
+        <h1>Laptop Parts Bazaar</h1>
+        <p class="lead">Second-hand & new laptop parts ke liye simple marketplace</p>
+      </div>
+    </div>
+    <div class="top-controls">
+      <input id="q" class="search" placeholder="Search: RAM, SSD, brand..."> 
+      <button id="exportBtn" class="mutebtn">Export CSV</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="grid">
+      <section>
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+            <h3 style="margin:0">Products</h3>
+            <div class="small">Total: <span id="count">0</span></div>
+          </div>
+
+          <div style="margin-bottom:12px" class="filters">
+            <select id="catFilter">
+              <option value="">All categories</option>
+              <option>RAM</option>
+              <option>SSD</option>
+              <option>HDD</option>
+              <option>Battery</option>
+              <option>Adapter</option>
+              <option>Screen</option>
+            </select>
+            <select id="condFilter">
+              <option value="">Condition</option>
+              <option value="New">New</option>
+              <option value="Used">Used</option>
+            </select>
+            <select id="sortBy">
+              <option value="">Sort</option>
+              <option value="price-asc">Price ↑</option>
+              <option value="price-desc">Price ↓</option>
+            </select>
+          </div>
+
+          <div class="products" id="products"></div>
+        </div>
+      </section>
+
+      <aside>
+        <div class="card">
+          <h3 style="margin-top:0">Add / List Item</h3>
+          <form id="addForm">
+            <label>Title <input id="title" required placeholder="e.g. 8GB DDR4 2666 RAM"></label>
+            <div class="row">
+              <label style="flex:1">Category
+                <select id="category"><option>RAM</option><option>SSD</option><option>HDD</option><option>Battery</option><option>Adapter</option><option>Screen</option></select>
+              </label>
+              <label style="flex:1">Condition
+                <select id="condition"><option>Used</option><option>New</option></select>
+              </label>
+            </div>
+            <label>Brand <input id="brand" placeholder="e.g. Samsung, SK hynix"></label>
+            <div class="row">
+              <label style="flex:1">Price (₹) <input id="price" type="number" min="0" required></label>
+              <label style="flex:1">Qty <input id="qty" type="number" min="1" value="1"></label>
+            </div>
+            <label>Short description <textarea id="desc" rows="3" placeholder="Condition details, compatibility..."></textarea></label>
+            <label>Image <input id="imgfile" type="file" accept="image/*"></label>
+            <div style="display:flex;gap:8px;margin-top:10px">
+              <button type="submit">Add Item</button>
+              <button type="button" id="clearStorage" class="mutebtn">Clear All</button>
+            </div>
+            <p class="small">Note: This demo saves data in your browser. To publish, host files on GitHub Pages / Netlify or add a backend.</p>
+          </form>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h4 style="margin:0 0 8px 0">Quick host & sell</h4>
+          <ol class="small">
+            <li>File ko save karo: <code>index.html</code>.</li>
+            <li>GitHub par repo banao aur Pages enable karo (ya Netlify pe drag-and-drop).</li>
+            <li>Payments ke liye UPI link ya WhatsApp contact add karo product description mein.</li>
+          </ol>
+          <p class="small">Chaho to main backend (Firebase + Stripe / Razorpay) bhi bana kar dunga.</p>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <footer>Made for quick selling — Laptop Parts Bazaar • Simple demo • Open-source</footer>
+
+  <script>
+    // Simple client-only marketplace powered by localStorage
+    const $ = id => document.getElementById(id)
+    const productsEl = $('products'), q = $('q'), catFilter = $('catFilter'), condFilter = $('condFilter'), sortBy = $('sortBy'), count = $('count')
+    let products = JSON.parse(localStorage.getItem('lp_products')||'null') || sampleProducts()
+
+    function sampleProducts(){
+      const s = [
+        {id: genId(),title:'8GB DDR4 2666 RAM (Used)',category:'RAM',condition:'Used',brand:'AARVEX',price:700,qty:1,desc:'Good condition, tested',img:''},
+        {id: genId(),title:'8GB DDR4 2666 RAM (New)',category:'RAM',condition:'New',brand:'GVM',price:1200,qty:1,desc:'Brand new sealed',img:''},
+        {id: genId(),title:'Samsung 4TB HDD',category:'HDD',condition:'Used',brand:'Samsung',price:3500,qty:1,desc:'Working, bad sector free',img:''}
+      ]
+      localStorage.setItem('lp_products', JSON.stringify(s));
+      return s
+    }
+
+    function genId(){return 'p_'+Math.random().toString(36).slice(2,9)}
+
+    function render(){
+      const qv = q.value.trim().toLowerCase();
+      let list = products.filter(p=>{
+        if(catFilter.value && p.category!==catFilter.value) return false;
+        if(condFilter.value && p.condition!==condFilter.value) return false;
+        if(!qv) return true;
+        return (p.title + ' ' + p.brand + ' ' + p.desc + ' ' + p.category).toLowerCase().includes(qv)
+      })
+      if(sortBy.value==='price-asc') list.sort((a,b)=>a.price-b.price)
+      if(sortBy.value==='price-desc') list.sort((a,b)=>b.price-a.price)
+
+      productsEl.innerHTML = '';
+      count.textContent = list.length
+      if(list.length===0){productsEl.innerHTML='<div class="small">Koi item nahi mila.</div>';return}
+      list.forEach(p=>{
+        const div = document.createElement('div'); div.className='prod'
+        div.innerHTML = `
+          <div class="thumb">${p.img? '<img src="'+p.img+'">':'<div class="small">No image</div>'}</div>
+          <div style="flex:1">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div><strong>${escapeHtml(p.title)}</strong><div class="small">${escapeHtml(p.brand)} • ${escapeHtml(p.category)}</div></div>
+              <div class="price">₹${p.price}</div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+              <div class="badge">${escapeHtml(p.condition)}</div>
+              <div class="small">Qty: ${p.qty}</div>
+            </div>
+            <p class="small" style="margin-top:8px">${escapeHtml(p.desc)}</p>
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <button class="mutebtn" onclick="contactSeller('${p.id}')">Contact</button>
+              <button class="mutebtn" onclick="removeItem('${p.id}')">Delete</button>
+            </div>
+          </div>`
+        productsEl.appendChild(div)
+      })
+    }
+
+    function escapeHtml(str){return (str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+
+    function save(){localStorage.setItem('lp_products',JSON.stringify(products));render()}
+
+    function removeItem(id){if(!confirm('Hata diya jaye?'))return;products=products.filter(p=>p.id!==id);save()}
+
+    function contactSeller(id){const p = products.find(x=>x.id===id); if(!p) return alert('Item not found');
+      const subj = encodeURIComponent('Buy: '+p.title);
+      const body = encodeURIComponent('Hi,\n\nI am interested in your item:\n'+p.title+'\nPrice: ₹'+p.price+'\n\nPlease provide payment / pick-up details.');
+      window.location = 'mailto:SELLER@example.com?subject='+subj+'&body='+body
+    }
+
+    // Add form handling and image to base64
+    document.getElementById('addForm').addEventListener('submit', async e=>{
+      e.preventDefault();
+      const file = document.getElementById('imgfile').files[0];
+      let dataUrl = '';
+      if(file){dataUrl = await toDataURL(file)}
+      const item = {
+        id: genId(),
+        title: document.getElementById('title').value.trim(),
+        category: document.getElementById('category').value,
+        condition: document.getElementById('condition').value,
+        brand: document.getElementById('brand').value.trim(),
+        price: Number(document.getElementById('price').value)||0,
+        qty: Number(document.getElementById('qty').value)||1,
+        desc: document.getElementById('desc').value.trim(),
+        img: dataUrl
+      }
+      products.unshift(item); save(); e.target.reset();
+    })
+
+    function toDataURL(file){return new Promise((res,rej)=>{
+      const r = new FileReader(); r.onload = ()=>res(r.result); r.onerror = rej; r.readAsDataURL(file);
+    })}
+
+    $('clearStorage').addEventListener('click', ()=>{if(confirm('Saare items hata dein?')){products=[];save();localStorage.removeItem('lp_products')}})
+    q.addEventListener('input', render); catFilter.addEventListener('change', render); condFilter.addEventListener('change', render); sortBy.addEventListener('change', render)
+
+    $('exportBtn').addEventListener('click', ()=>{
+      const csv = toCSV(products);
+      const blob = new Blob([csv],{type:'text/csv'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href=url; a.download='lp_products.csv'; a.click(); URL.revokeObjectURL(url);
+    })
+
+    function toCSV(arr){
+      const keys = ['id','title','category','condition','brand','price','qty','desc'];
+      const rows = [keys.join(',')].concat(arr.map(o=>keys.map(k=>('"'+String(o[k]||'').replace(/"/g,'""')+'"')).join(',')));
+      return rows.join('\n')
+    }
+
+    // initial render
+    render()
+  </script>
+</body>
+</html>
